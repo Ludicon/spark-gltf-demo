@@ -21,13 +21,11 @@ function getWebGPURecommendation() {
 }
 
 export async function getWebGPUAdapter() {
-  // Basic capability checks
   if (!navigator.gpu) {
     showError("WebGPU Not Supported", "This demo requires a browser with WebGPU support.<br/>" + getWebGPURecommendation());
     throw new Error("WebGPU not supported");
   }
 
-  // Keep a single adapter/device for three.js + Spark
   let adapter = null;
   try {
     adapter = await navigator.gpu.requestAdapter();

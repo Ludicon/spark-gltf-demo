@@ -30,6 +30,12 @@ async function init() {
   const requiredFeatures = Spark.getRequiredFeatures(adapter);
   const device = await adapter.requestDevice({ requiredFeatures });
 
+  // Create spark object and preload codecs for all formats.
+  const spark = await Spark.create(device, {
+    preload: ["rgba", "rgb", "rg", "r"],
+    preloadLowQuality: true,
+  });
+
   // Create canvas inside the viewer DIV
   canvas = document.createElement("canvas");
   viewerEl = document.getElementById("viewer");
@@ -41,20 +47,8 @@ async function init() {
   await renderer.init();
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-  // Create spark object and preload codecs for all formats.
-  const spark = await Spark.create(device, {
-    preload: ["rgba", "rgb", "rg", "r"],
-    preloadLowQuality: true,
-  });
-
   // Scene setup
   scene = new THREE.Scene();
-
-  camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-  camera.position.set(2, 2, 3);
-
-  controls = new OrbitControls(camera, canvas);
-  controls.enableDamping = true;
 
   new UltraHDRLoader().setPath("assets/").load("royal_esplanade_2k.hdr.jpg", function (texture) {
     texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -64,7 +58,13 @@ async function init() {
     scene.environment = texture;
   });
 
-  // Create two GLTF loaders, one with spark another with KTX plugins.
+  camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+  camera.position.set(2, 2, 3);
+
+  controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+
+  // Create multiple GLTF loaders with KTX and Spark plugins.
   loaderDefault = new GLTFLoader();
   loaderDefault.setMeshoptDecoder(MeshoptDecoder);
 
