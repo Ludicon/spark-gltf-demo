@@ -114,53 +114,6 @@
         border-color: #666;
       }
 
-      #sparkToggleWrap {
-        position: absolute;
-        top: 0.75rem;
-        right: 0.75rem;
-        z-index: 6;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        background: rgba(0, 0, 0, 0.5);
-        padding: 0.3rem 0.5rem;
-        border-radius: 0.5rem;
-        color: #ddd;
-        user-select: none;
-        font-size: 0.9rem;
-      }
-      #sparkToggle {
-        accent-color: #66c;
-      }
-
-      #mapViewWrap {
-        position: absolute;
-        bottom: 0.75rem;
-        left: 0.75rem;
-        z-index: 6;
-        background: rgba(0, 0, 0, 0.5);
-        color: #ddd;
-        font-size: 0.85rem;
-        padding: 0.4rem 0.6rem;
-        border-radius: 0.5rem;
-        display: flex;
-        /*gap:.6rem;
-      align-items:center;*/
-        flex-direction: column; /* vertical layout */
-        gap: 0.35rem; /* space between rows */
-        align-items: flex-start; /* left align */
-      }
-      #mapViewWrap legend {
-        margin-right: 0.4rem;
-        font-weight: 600;
-      }
-      #mapViewWrap label {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        cursor: pointer;
-      }
-
       #barchart {
         position: absolute;
         top: 3.5rem; /* sits below the overlay nav */
@@ -291,8 +244,6 @@
 
       /* Mobile styles */
       @media (max-width: 700px) {
-        #sparkToggleWrap,
-        #mapViewWrap,
         #barchart,
         #modelSelectWrap,
         #powered,
@@ -313,10 +264,6 @@
           min-width: 50%;
           max-width: 50%;
         }
-
-        #sparkToggleWrap {
-          visibility: hidden;
-        }
       }
     </style>
   </head>
@@ -330,20 +277,6 @@
       <nav id="modelbar" aria-label="Choose model">
         <!-- This is filled programatically -->
       </nav>
-
-      <!--label id="sparkToggleWrap" title="Toggle spark.js integration">
-      <input id="sparkToggle" type="checkbox" checked />
-      <span>Enable Spark⚡</span>
-    </label-->
-
-      <!--fieldset id="mapViewWrap">
-      <legend>View</legend>
-      <label><input type="radio" name="mapview" value="lit" checked> Lit Material</label>
-      <label><input type="radio" name="mapview" value="albedo"> Albedo</label>
-      <label><input type="radio" name="mapview" value="normal"> Normal</label>
-      <label><input type="radio" name="mapview" value="roughness"> Roughness/Metalness</label>
-      <label><input type="radio" name="mapview" value="occlusion"> Occlusion</label>
-    </fieldset-->
 
       <a
         id="downloadLink"
@@ -626,7 +559,6 @@
 
       function disposeGLTF(gltf) {
         if (!gltf) return;
-        dbg.remove();
         gltf.scene.traverse(obj => {
           if (obj.isMesh) {
             obj.geometry?.dispose?.();
@@ -687,9 +619,6 @@
           gltf.scene.position.sub(center);
 
           scene.add(gltf.scene);
-
-          dbg = makeTextureDebugger(gltf.scene);
-          //applyMapView(); // reapply chosen view on the new model
         } finally {
           console.timeEnd(`Load ${url}`);
           setProgress(100, "Loaded");
@@ -796,31 +725,6 @@
       //   updateChart(a);
       //   await loadModel(url, useSpark);
       // });
-
-      // Track current map view
-      let dbg = null; // texture debugger for current model
-      /*let mapView = 'lit'; // 'lit' | 'albedo' | 'normal' | 'roughness'
-
-    function applyMapView() {
-      if (!dbg) return
-
-      switch (mapView) {
-        case 'albedo':    dbg.showBaseColor(); break;
-        case 'normal':    dbg.showNormalMap(); break;
-        case 'roughness': dbg.showRoughness(); break;
-        case 'occlusion': dbg.showOcclusion(); break;
-        default:          dbg.restore(); break; // 'lit'
-      }
-    }
-
-    // Hook radios
-    document.getElementById('mapViewWrap').addEventListener('change', (e) => {
-      const input = e.target.closest('input[type="radio"][name="mapview"]');
-      if (!input) return;
-      mapView = input.value;
-      applyMapView();
-    });
-    */
 
       // Find elements
       const chartEls = {
