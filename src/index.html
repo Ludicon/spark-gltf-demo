@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Basic -->
+    <link rel="canonical" href="https://ludicon.com/sparkjs/gltf-demo/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ludicon.com/sparkjs/gltf-demo/" />
+    <meta property="og:title" content="spark.js⚡ GLTF Demo" />
+    <meta property="og:description" content="A GLTF viewer with Spark⚡ real-time GPU compression." />
+    <meta property="og:image" content="https://ludicon.com/sparkjs/gltf-demo/og.jpg" />
+    <meta property="og:image:width" content="858" />
+    <meta property="og:image:height" content="600" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="spark.js⚡ GLTF Demo" />
+    <meta name="twitter:description" content="A GLTF viewer with Spark⚡ real-time GPU compression." />
+    <meta name="twitter:image" content="https://ludicon.com/sparkjs/gltf-demo/og.jpg" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N5MLWTT7JM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-N5MLWTT7JM");
+    </script>
+    <script src="https://cdn.counter.dev/script.js" data-id="d35a48c2-0e1d-4b08-972d-bd0016273314" data-utcoffset="-7"></script>
+
+    <title>spark.js⚡ GLTF Demo</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      html {
+        font-size: 14px;
+      }
+      body {
+        background: #222;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      #viewer {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      #modelSelectWrap {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 7;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.5rem;
+      }
+      #modelSelectWrap.hidden {
+        display: none;
+      }
+
+      #modelSelect {
+        font-size: 0.9rem;
+        color: #ddd;
+        background: #222;
+        border: 1px solid #444;
+        border-radius: 0.3rem;
+        padding: 0.2rem 0.4rem;
+      }
+
+      /* Overlay nav inside viewer */
+      #modelbar {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 5;
+      }
+      #modelbar a {
+        color: #ccc;
+        text-decoration: none;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.5rem;
+        border: 1px solid #333;
+        background: rgba(0, 0, 0, 0.5);
+        font-size: 0.9rem;
+      }
+      #modelbar a.active,
+      #modelbar a:hover {
+        color: #fff;
+        border-color: #666;
+      }
+
+      #sparkToggleWrap {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 6;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.5rem;
+        color: #ddd;
+        user-select: none;
+        font-size: 0.9rem;
+      }
+      #sparkToggle {
+        accent-color: #66c;
+      }
+
+      #mapViewWrap {
+        position: absolute;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        z-index: 6;
+        background: rgba(0, 0, 0, 0.5);
+        color: #ddd;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.5rem;
+        display: flex;
+        /*gap:.6rem;
+      align-items:center;*/
+        flex-direction: column; /* vertical layout */
+        gap: 0.35rem; /* space between rows */
+        align-items: flex-start; /* left align */
+      }
+      #mapViewWrap legend {
+        margin-right: 0.4rem;
+        font-weight: 600;
+      }
+      #mapViewWrap label {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+      }
+
+      #barchart {
+        position: absolute;
+        top: 3.5rem; /* sits below the overlay nav */
+        left: 0.75rem;
+        min-width: 260px;
+        max-width: min(420px, 40vw);
+        display: grid;
+        gap: 0.5rem;
+        padding: 0.5rem 0.6rem;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 0.6rem;
+        user-select: none;
+        backdrop-filter: blur(2px);
+        font-size: 0.85rem;
+        color: #ddd;
+        z-index: 5;
+      }
+      #barchart.hidden {
+        display: none;
+      }
+
+      #barchart .row {
+        display: grid;
+        grid-template-columns: 2.75rem 1fr;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      #barchart .label {
+        color: #bbb;
+      }
+      #barchart .track {
+        position: relative;
+        height: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      #barchart .bar {
+        height: 100%;
+        width: 0%;
+        transition: width 280ms ease; /* smooth width animation */
+        border-radius: 8px;
+      }
+      #barchart .bar.file {
+        background: rgba(100, 180, 255, 0.9);
+      }
+      #barchart .bar.gpu {
+        background: rgba(140, 255, 160, 0.9);
+      }
+
+      #barchart .value {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+      }
+
+      #overlay {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        /*background: linear-gradient(transparent, rgba(0,0,0,0.35) 20%, rgba(0,0,0,0.6));*/
+        color: #fff;
+        opacity: 1;
+        pointer-events: all;
+        transition: opacity 0.2s;
+      }
+      #overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      } /* ← blocks clicks while visible */
+      #overlay.hide {
+        opacity: 0;
+        pointer-events: none;
+      } /* ← blocks clicks while visible */
+
+      #overlay .box {
+        width: min(420px, 80vw);
+      }
+      #overlay .label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+      }
+      #overlay .track {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      #overlay .bar {
+        height: 100%;
+        background: #8cfaa3;
+        width: 0%;
+      }
+      .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      #error {
+        color: #fff;
+        padding: 2em;
+        max-width: 720px;
+        margin: 5em auto;
+        text-align: center;
+      }
+
+      #powered {
+        position: absolute;
+        bottom: 0.75rem;
+        right: 0.75rem;
+        color: #ccc;
+        text-decoration: none;
+        font-size: 0.85rem;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+      }
+      #powered:hover {
+        color: #fff;
+        border-color: #666;
+      }
+
+      /* Mobile styles */
+      @media (max-width: 700px) {
+        #sparkToggleWrap,
+        #mapViewWrap,
+        #barchart,
+        #modelSelectWrap,
+        #powered,
+        #modelbar a {
+          font-size: 0.75rem;
+          padding: 0.2rem 0.4rem;
+        }
+
+        #modelbar {
+          top: 0.25rem;
+        }
+
+        #modelSelectWrap {
+          top: 3.5rem;
+        }
+
+        #barchart {
+          min-width: 50%;
+          max-width: 50%;
+        }
+
+        #sparkToggleWrap {
+          visibility: hidden;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div id="modelSelectWrap" class="hidden">
+        <select id="modelSelect"></select>
+      </div>
+
+      <nav id="modelbar" aria-label="Choose model">
+        <!-- This is filled programatically -->
+      </nav>
+
+      <!--label id="sparkToggleWrap" title="Toggle spark.js integration">
+      <input id="sparkToggle" type="checkbox" checked />
+      <span>Enable Spark⚡</span>
+    </label-->
+
+      <!--fieldset id="mapViewWrap">
+      <legend>View</legend>
+      <label><input type="radio" name="mapview" value="lit" checked> Lit Material</label>
+      <label><input type="radio" name="mapview" value="albedo"> Albedo</label>
+      <label><input type="radio" name="mapview" value="normal"> Normal</label>
+      <label><input type="radio" name="mapview" value="roughness"> Roughness/Metalness</label>
+      <label><input type="radio" name="mapview" value="occlusion"> Occlusion</label>
+    </fieldset-->
+
+      <a
+        id="downloadLink"
+        class="disabled"
+        href="#"
+        download
+        style="
+          position: absolute;
+          bottom: 0.75rem;
+          left: 0.75rem;
+          z-index: 6;
+          color: #ddd;
+          background: rgba(0, 0, 0, 0.5);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.5rem;
+          text-decoration: none;
+          font-size: 0.85rem;
+        "
+        >⬇ Download Model</a
+      >
+
+      <!-- Display bar chart with file and vram size. -->
+      <div id="barchart" class="hidden" role="img" aria-label="Model sizes bar chart">
+        <div class="row">
+          <span class="label">File</span>
+          <div class="track">
+            <div class="bar file" style="width: 0%"></div>
+            <span class="value file">0 MB</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <span class="label">GPU</span>
+          <div class="track">
+            <div class="bar gpu" style="width: 0%"></div>
+            <span class="value gpu">0 MB</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- The renderer will draw INSIDE this div -->
+    <div id="viewer" tabindex="0">
+      <!--div id="overlay">Loading…</div-->
+      <div id="overlay" aria-live="polite" aria-busy="false">
+        <div class="box">
+          <div class="label"><span id="overlayMsg">Loading…</span> <span id="pct">0%</span></div>
+          <div class="track">
+            <div class="bar" id="bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a id="powered" href="https://ludicon.com/sparkjs/" target="_blank" rel="noreferrer">Powered by spark.js⚡</a>
+
+    <div id="error" style="display: none"></div>
+
+    <script type="module">
+      import * as THREE from "three/webgpu";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+      import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
+      import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+
+      import { makeTextureDebugger } from "./three-gltf-debug.js";
+
+      import { Spark } from "@ludicon/spark.js";
+      import { registerSparkLoader } from "@ludicon/spark.js/three-gltf";
+
+      const errorEl = document.getElementById("error");
+      const viewerEl = document.getElementById("viewer");
+      const downloadLink = document.getElementById("downloadLink");
+      const barchartEl = document.getElementById("barchart");
+      const modelSelectWrapEl = document.getElementById("modelSelectWrap");
+
+      const errorHTML = (title, body) => `
+      <h1>${title}</h1>
+      <p>${body}</p>
+      <p>More info: <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API" target="_blank" rel="noreferrer">MDN: WebGPU API</a></p>
+    `;
+
+      function showError(title, body) {
+        errorEl.style.display = "";
+        errorEl.innerHTML = errorHTML(title, body);
+        viewerEl.style.display = "none";
+      }
+      function getWebGPURecommendation() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+        if (/iphone|ipad|ipod/i.test(ua)) {
+          return "If you are on iOS, WebGPU is only supported in Safari.";
+        }
+        if (/android/i.test(ua)) {
+          return "If you are on Android, WebGPU is only supported in Chrome.";
+        }
+        if (/windows/i.test(ua)) {
+          return "If you are on Windows, WebGPU is supported in Chrome or Edge. Firefox 141+ works with some known issues.";
+        }
+        if (/macintosh|mac os x/i.test(ua)) {
+          return "If you are on macOS, WebGPU is supported in Safari or Chrome. Safari 26 and Safari Technology Preview work out of the box, but on earlier versions you need to enable WebGPU manually. Firefox Nightly works with some known issues.";
+        }
+        return ""; // other OS → no recommendation
+      }
+
+      // Basic capability checks
+      if (!navigator.gpu) {
+        showError("WebGPU Not Supported", "This demo requires a browser with WebGPU support. " + getWebGPURecommendation());
+        throw new Error("WebGPU not supported");
+      }
+
+      // Keep a single adapter/device for three.js + Spark
+      let adapter = null;
+      try {
+        adapter = await navigator.gpu.requestAdapter();
+      } catch (err) {
+        console.error("Error while requesting WebGPU adapter:", err);
+      }
+      if (!adapter) {
+        showError("No GPU Adapter", "No appropriate GPUAdapter was found on this system." + getWebGPURecommendation());
+        throw new Error("No appropriate GPUAdapter found");
+      }
+
+      const threeRevision = parseInt(THREE.REVISION, 10);
+      if (threeRevision < 180) {
+        showError("Three.js too old", `Three.js r180 or newer is required (found r${THREE.REVISION}).`);
+        throw new Error(`Three.js r180 or newer is required (found r${THREE.REVISION})`);
+      }
+
+      const requiredFeatures = Spark.getRequiredFeatures(adapter);
+      const device = await adapter.requestDevice({ requiredFeatures });
+
+      // Canvas inside the viewer DIV
+      const canvas = document.createElement("canvas");
+      viewerEl.appendChild(canvas);
+      const context = canvas.getContext("webgpu");
+
+      // Renderer using our device & context
+      const renderer = new THREE.WebGPURenderer({
+        device,
+        context,
+        antialias: true,
+      });
+      await renderer.init();
+      renderer.xr.enabled = true;
+
+      import { VRButton } from "../../three.js/examples/jsm/webxr/VRButton.js";
+      document.body.appendChild(VRButton.createButton(renderer));
+
+      // Spark device (preload common formats)
+      const spark = await Spark.create(device, {
+        preload: ["rgba", "rgb", "rg", "r"],
+        preloadLowQuality: true,
+      });
+
+      // Scene setup
+      const scene = new THREE.Scene();
+
+      const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+      camera.position.set(2, 2, 3);
+
+      const controls = new OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(3, 5, 2);
+      scene.add(light, new THREE.AmbientLight(0xffffff, 0.4));
+
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      pmremGenerator.compileEquirectangularShader();
+      const neutralEnvironment = pmremGenerator.fromScene(new RoomEnvironment()).texture;
+      scene.environment = neutralEnvironment;
+
+      const overlay = {
+        el: document.getElementById("overlay"),
+        pct: document.getElementById("pct"),
+        bar: document.getElementById("bar"),
+        msg: document.getElementById("overlayMsg"),
+      };
+
+      let isLoading = false;
+
+      function setLoading(on) {
+        isLoading = on;
+        //overlay.el.classList.toggle('show', on);
+        overlay.el.classList.toggle("hide", !on);
+        overlay.el.setAttribute("aria-busy", on ? "true" : "false");
+        // Disable UI
+        modelbarEl?.classList.toggle("disabled", on);
+        modelSelect?.toggleAttribute("disabled", on);
+        downloadLink?.classList.toggle("disabled", on);
+        barchartEl?.classList.toggle("disabled", on);
+        barchartEl?.classList.remove("hidden");
+        modelSelectWrapEl?.classList.remove("hidden");
+
+        // Disable camera interaction
+        if (controls) controls.enabled = !on;
+      }
+
+      function setProgress(percent, note) {
+        const p = Math.max(0, Math.min(100, Math.round(percent)));
+        overlay.pct.textContent = `${p}%`;
+        overlay.bar.style.width = `${p}%`;
+        if (note) overlay.msg.textContent = note;
+      }
+
+      // Create one manager for ALL loaders:
+      const manager = new THREE.LoadingManager();
+
+      // manager.onStart = (url, itemsLoaded, itemsTotal) => {
+      //   setProgress(0, 'Loading…');
+      //   setLoading(true);
+      // };
+
+      // manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      //   // item-based progress (coarse). If we have byte progress for the GLB we’ll overwrite it.
+      //   const pct = (itemsLoaded / itemsTotal) * 100;
+      //   setProgress(pct);
+      // };
+
+      // manager.onLoad = () => {
+      //   setProgress(100, 'Loaded');
+      //   // small delay so users can see 100%
+      //   setTimeout(() => setLoading(false), 500);
+      // };
+
+      // Create two GLTF loaders, one with spark another with KTX plugins.
+      const loaderDefault = new GLTFLoader();
+      loaderDefault.setMeshoptDecoder(MeshoptDecoder);
+
+      const ktx2 = new KTX2Loader();
+      ktx2.setTranscoderPath("./libs/basis/");
+      ktx2.detectSupport(renderer);
+      loaderDefault.setKTX2Loader(ktx2);
+
+      const loaderSpark = new GLTFLoader();
+      loaderSpark.setMeshoptDecoder(MeshoptDecoder);
+      registerSparkLoader(loaderSpark, spark, { preferLowQuality: false });
+
+      const loaderSparkLow = new GLTFLoader();
+      loaderSparkLow.setMeshoptDecoder(MeshoptDecoder);
+      registerSparkLoader(loaderSparkLow, spark, { preferLowQuality: true });
+
+      const Examples = {
+        SciFiHelmet: [
+          { label: "Original PNG", url: "./models/SciFiHelmet.glb", size: 26.64, vram: 85.33, active: true },
+          { label: "Basis UASTC", url: "./models/SciFiHelmet-uastc.glb", size: 12.04, vram: 22.36 },
+          { label: "Spark⚡ AVIF", url: "./models/SciFiHelmet-avif.glb", size: 3.27, vram: 18.66, spark: "hi" },
+          { label: "Basis ETC1S", url: "./models/SciFiHelmet-etc1s.glb", size: 1.96, vram: 13.33 },
+          { label: "Spark⚡ AVIF (low)", url: "./models/SciFiHelmet-avif-lo.glb", size: 1.45, vram: 13.33, spark: "lo" },
+        ],
+        StainedGlassLamp: [
+          { label: "Original PNG", url: "./models/StainedGlassLamp.glb", size: 31.7, vram: 311, active: true },
+          { label: "Basis UASTC", url: "./models/StainedGlassLamp-uastc.glb", size: 33.78, vram: 77.75 },
+          { label: "Spark⚡ AVIF", url: "./models/StainedGlassLamp-avif.glb", size: 4.79, vram: 77.54, spark: "hi" },
+          { label: "Basis ETC1S", url: "./models/StainedGlassLamp-etc1s.glb", size: 12.18, vram: 52.21 },
+          { label: "Spark⚡ AVIF (low)", url: "./models/StainedGlassLamp-avif-lo.glb", size: 1.91, vram: 48.21, spark: "lo" },
+        ],
+        ToyCar: [
+          { label: "Original PNG", url: "./models/ToyCar.glb", size: 2.05, vram: 34.67, active: true },
+          { label: "Basis UASTC", url: "./models/ToyCar-uastc.glb", size: 2.12, vram: 8.67 },
+          { label: "Spark⚡ AVIF", url: "./models/ToyCar-avif.glb", size: 0.26, vram: 8.0, spark: "hi" },
+          { label: "Basis ETC1S", url: "./models/ToyCar-etc1s.glb", size: 0.73, vram: 5.17 },
+          { label: "Spark⚡ AVIF (low)", url: "./models/ToyCar-avif-lo.glb", size: 0.1, vram: 5.17, spark: "lo" },
+        ],
+        FlightHelmet: [
+          { label: "Original PNG", url: "./models/FlightHelmet.glb", size: 43.05, vram: 272, active: true },
+          { label: "Basis UASTC", url: "./models/FlightHelmet-uastc.glb", size: 38.66, vram: 68 },
+          { label: "Spark⚡ AVIF", url: "./models/FlightHelmet-avif.glb", size: 7.0, vram: 68, spark: "hi" },
+          { label: "Basis ETC1S", url: "./models/FlightHelmet-etc1s.glb", size: 17.88, vram: 45.33 },
+          { label: "Spark⚡ AVIF (low)", url: "./models/FlightHelmet-avif-lo.glb", size: 2.0, vram: 45.33, spark: "lo" },
+        ],
+      };
+
+      let enableSpark = true;
+
+      // Track current model to dispose when switching
+      let current = /** @type {import('three/examples/jsm/loaders/GLTFLoader.js').GLTF | null} */ (null);
+
+      function disposeGLTF(gltf) {
+        if (!gltf) return;
+        dbg.remove();
+        gltf.scene.traverse(obj => {
+          if (obj.isMesh) {
+            obj.geometry?.dispose?.();
+            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+            mats.filter(Boolean).forEach(m => {
+              // Dispose regular textures; ExternalTexture (spark) has no GPU-side disposal in three.js yet
+              ["map", "normalMap", "metalnessMap", "roughnessMap", "aoMap", "emissiveMap", "specularMap", "alphaMap", "envMap"].forEach(
+                k => {
+                  const t = m[k];
+                  if (t && t.isTexture && !t.isExternalTexture) t.dispose();
+                }
+              );
+              m.dispose?.();
+            });
+          }
+        });
+        if (gltf.animations) gltf.animations.length = 0;
+        scene.remove(gltf.scene);
+      }
+
+      async function loadModel(url, useSpark) {
+        setLoading(true);
+        setProgress(0, "Loading…");
+        console.time(`Load ${url}`);
+        try {
+          const loader = useSpark && enableSpark ? (useSpark == "lo" ? loaderSparkLow : loaderSpark) : loaderDefault;
+
+          //const gltf = await loader.loadAsync(url);
+
+          const gltf = await new Promise((resolve, reject) => {
+            loader.load(
+              url,
+              g => resolve(g),
+              e => {
+                if (e && e.lengthComputable) {
+                  const pct = (e.loaded / e.total) * 100;
+                  setProgress(pct, "Downloading…");
+                } else {
+                  // no Content-Length → fall back to manager-based updates already happening
+                }
+              },
+              err => reject(err)
+            );
+          });
+
+          // Remove previous
+          disposeGLTF(current);
+          current = gltf;
+
+          // Normalize scale for visibility
+          const box = new THREE.Box3().setFromObject(gltf.scene);
+          const size = box.getSize(new THREE.Vector3()).length() || 1;
+          gltf.scene.scale.setScalar(4 / size);
+
+          // Offset at the origin
+          const center = box.getCenter(new THREE.Vector3());
+          center.multiplyScalar(gltf.scene.scale.x);
+          gltf.scene.position.sub(center);
+
+          scene.add(gltf.scene);
+
+          dbg = makeTextureDebugger(gltf.scene);
+          //applyMapView(); // reapply chosen view on the new model
+        } finally {
+          console.timeEnd(`Load ${url}`);
+          setProgress(100, "Loaded");
+          setTimeout(() => setLoading(false), 250);
+          updateDownloadLink(url);
+          render();
+        }
+      }
+
+      function updateDownloadLink(url) {
+        downloadLink.href = url;
+
+        // optional: suggest a filename
+        const parts = url.split("/");
+        downloadLink.download = parts[parts.length - 1];
+      }
+
+      // Init model selector:
+      const modelSelect = document.getElementById("modelSelect");
+      const modelbarEl = document.getElementById("modelbar");
+
+      for (const name of Object.keys(Examples)) {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        modelSelect.appendChild(opt);
+      }
+
+      modelSelect.addEventListener("change", async e => {
+        models = updateModelBar(e.target.value);
+
+        await loadModel(models[0].url, models[0].useSpark);
+
+        updateChart2(models, models[0]);
+      });
+
+      // Initialize with first entry
+      modelSelect.value = "SciFiHelmet";
+      let maxModelSize = 0;
+      let maxModelVram = 0;
+      let models = updateModelBar(modelSelect.value);
+
+      function updateModelBar(name) {
+        const models = Examples[name];
+
+        modelbarEl.innerHTML = "";
+        models.forEach((m, i) => {
+          const a = document.createElement("a");
+          a.href = "#";
+          a.dataset.index = i; // @@ We should use the index to access the other attributes.
+          a.dataset.model = m.url;
+          a.dataset.vram = m.vram;
+          a.dataset.size = m.size;
+          if (m.spark) a.dataset.spark = m.spark;
+          a.textContent = m.label;
+          if (i === 0) a.classList.add("active");
+
+          m.el = a;
+          modelbarEl.appendChild(a);
+        });
+
+        maxModelSize = Math.max(...models.map(m => m.size));
+        maxModelVram = Math.max(...models.map(m => m.vram));
+
+        return models;
+      }
+
+      function setActive(el) {
+        for (const { el: link } of models) link.classList.toggle("active", link === el);
+      }
+
+      // meshbarEl.addEventListener('click', (e) => {
+      //   const a = e.target.closest('a[data-mesh]');
+      //   if (!a) return;
+      //   e.preventDefault();
+
+      //   // toggle active tab
+      //   meshbarEl.querySelectorAll('a').forEach(x => x.classList.toggle('active', x === a));
+
+      //   // render variants for this mesh
+      //   updateModelBar(a.dataset.mesh);
+
+      //   // optionally auto-load the active variant
+      //   const activeVariant = modelbarEl.querySelector('a.active') || modelbarEl.querySelector('a');
+      //   if (activeVariant) {
+      //     setActive(activeVariant);
+      //     updateChart(activeVariant);
+      //     loadModel(activeVariant.dataset.model);
+      //   }
+      // });
+
+      //const sparkToggleEl = document.getElementById("sparkToggle"); // @@ Hide this.
+      // sparkToggleEl.checked = enableSpark;
+
+      // sparkToggleEl.addEventListener('change', async () => {
+      //   enableSpark = sparkToggleEl.checked;
+
+      //   // Reload the currently active model to reflect the new pipeline
+      //   const a = document.querySelector('#modelbar a.active') || models[0].el;
+      //   const url = a.getAttribute('data-model');
+      //   const useSpark = a.getAttribute('data-spark');
+
+      //   setActive(a);
+      //   updateChart(a);
+      //   await loadModel(url, useSpark);
+      // });
+
+      // Track current map view
+      let dbg = null; // texture debugger for current model
+      /*let mapView = 'lit'; // 'lit' | 'albedo' | 'normal' | 'roughness'
+
+    function applyMapView() {
+      if (!dbg) return
+
+      switch (mapView) {
+        case 'albedo':    dbg.showBaseColor(); break;
+        case 'normal':    dbg.showNormalMap(); break;
+        case 'roughness': dbg.showRoughness(); break;
+        case 'occlusion': dbg.showOcclusion(); break;
+        default:          dbg.restore(); break; // 'lit'
+      }
+    }
+
+    // Hook radios
+    document.getElementById('mapViewWrap').addEventListener('change', (e) => {
+      const input = e.target.closest('input[type="radio"][name="mapview"]');
+      if (!input) return;
+      mapView = input.value;
+      applyMapView();
+    });
+    */
+
+      // Find elements
+      const chartEls = {
+        fileBar: document.querySelector("#barchart .bar.file"),
+        gpuBar: document.querySelector("#barchart .bar.gpu"),
+        fileVal: document.querySelector("#barchart .value.file"),
+        gpuVal: document.querySelector("#barchart .value.gpu"),
+      };
+
+      function updateChart(linkEl) {
+        const file = parseFloat(linkEl.getAttribute("data-size")) || 0;
+        const gpu = parseFloat(linkEl.getAttribute("data-vram")) || 0;
+
+        const filePct = (file / maxModelSize) * 100;
+        const gpuPct = (gpu / maxModelVram) * 100;
+
+        chartEls.fileBar.style.width = `${filePct}%`;
+        chartEls.gpuBar.style.width = `${gpuPct}%`;
+
+        chartEls.fileVal.textContent = `${file.toFixed(2)} MB`;
+        chartEls.gpuVal.textContent = `${gpu.toFixed(2)} MB`;
+      }
+      function updateChart2(models, model) {
+        const sizePct = (model.size / maxModelSize) * 100;
+        const vramPct = (model.vram / maxModelVram) * 100;
+
+        chartEls.fileBar.style.width = `${sizePct}%`;
+        chartEls.gpuBar.style.width = `${vramPct}%`;
+
+        chartEls.fileVal.textContent = `${model.size.toFixed(2)} MB`;
+        chartEls.gpuVal.textContent = `${model.vram.toFixed(2)} MB`;
+      }
+
+      modelbarEl.addEventListener("click", async e => {
+        const a = e.target.closest("a[data-model]");
+        if (!a) return;
+        e.preventDefault();
+        const url = a.getAttribute("data-model");
+        if (!url) return;
+        const useSpark = a.getAttribute("data-spark");
+
+        setActive(a);
+        updateChart(a);
+        await loadModel(url, useSpark);
+      });
+
+      updateChart2(models, models[0]);
+      await loadModel(models[0].url, false);
+
+      // Resize to the viewer DIV (not the whole window)
+      function resize() {
+        const w = viewerEl.clientWidth;
+        const h = viewerEl.clientHeight;
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+        render();
+      }
+      const ro = new ResizeObserver(resize);
+      ro.observe(viewerEl);
+      window.addEventListener("resize", resize, { passive: true });
+      resize();
+
+      // Render loop
+      function animate() {
+        //requestAnimationFrame(animate);
+
+        if (controls.enableDamping || controls.autoRotate) {
+          controls.update();
+        }
+        render();
+      }
+      function render() {
+        renderer.render(scene, camera);
+      }
+      renderer.setAnimationLoop(animate);
+
+      //controls.addEventListener('change', render);
+      animate();
+    </script>
+  </body>
+</html>
