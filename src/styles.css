@@ -1,0 +1,250 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  font-size: 14px;
+}
+
+body {
+  background: #222;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+
+#viewer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#modelSelectWrap {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 7;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+#modelSelectWrap.hidden {
+  display: none;
+}
+
+#modelSelect {
+  font-size: 0.9rem;
+  color: #ddd;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.4rem;
+}
+
+/* Overlay nav inside viewer */
+#modelbar {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+#modelbar a {
+  color: #ccc;
+  text-decoration: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #333;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+}
+
+#modelbar a.active,
+#modelbar a:hover {
+  color: #fff;
+  border-color: #666;
+}
+
+#barchart {
+  position: absolute;
+  top: 3.5rem; /* sits below the overlay nav */
+  left: 0.75rem;
+  min-width: 260px;
+  max-width: min(420px, 40vw);
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.6rem;
+  user-select: none;
+  backdrop-filter: blur(2px);
+  font-size: 0.85rem;
+  color: #ddd;
+  z-index: 5;
+}
+
+#barchart.hidden {
+  display: none;
+}
+
+#barchart .row {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#barchart .label {
+  color: #bbb;
+}
+
+#barchart .track {
+  position: relative;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#barchart .bar {
+  height: 100%;
+  width: 0%;
+  transition: width 280ms ease; /* smooth width animation */
+  border-radius: 8px;
+}
+
+#barchart .bar.file {
+  background: rgba(100, 180, 255, 0.9);
+}
+
+#barchart .bar.gpu {
+  background: rgba(140, 255, 160, 0.9);
+}
+
+#barchart .value {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /*background: linear-gradient(transparent, rgba(0,0,0,0.35) 20%, rgba(0,0,0,0.6));*/
+  color: #fff;
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.2s;
+}
+
+#overlay.show {
+  opacity: 1;
+  pointer-events: all;
+} /* ← blocks clicks while visible */
+
+#overlay.hide {
+  opacity: 0;
+  pointer-events: none;
+} /* ← blocks clicks while visible */
+
+#overlay .box {
+  width: min(420px, 80vw);
+}
+
+#overlay .label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+#overlay .track {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#overlay .bar {
+  height: 100%;
+  background: #8cfaa3;
+  width: 0%;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+#error {
+  color: #fff;
+  padding: 2em;
+  max-width: 720px;
+  margin: 5em auto;
+  text-align: center;
+}
+
+#powered {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+#powered:hover {
+  color: #fff;
+  border-color: #666;
+}
+
+/* Mobile styles */
+@media (max-width: 700px) {
+  #barchart,
+  #modelSelectWrap,
+  #powered,
+  #modelbar a {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  #modelbar {
+    top: 0.25rem;
+  }
+
+  #modelSelectWrap {
+    top: 3.5rem;
+  }
+
+  #barchart {
+    min-width: 50%;
+    max-width: 50%;
+  }
+}
