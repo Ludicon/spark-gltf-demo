@@ -92,10 +92,13 @@ export function makeTextureDebugger(root) {
     applyForEachMesh(m => {
       const t = texOrNull(m, "normalMap");
       if (!t) return null;
-      t.colorSpace = THREE.LinearSRGBColorSpace;
-      const mat = new THREE.MeshBasicMaterial({ map: t });
+
+      const mat = new THREE.MeshNormalMaterial({ normalMap: t });
+      // const mat = new THREE.MeshBasicMaterial({ map: t });
+
       // Normal maps are linear data; make sure they're not treated as sRGB
-      if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) return mat;
+      if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
+      return mat;
     });
   }
 
