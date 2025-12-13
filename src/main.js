@@ -9,6 +9,7 @@ import { Spark } from "@ludicon/spark.js";
 import { registerSparkLoader } from "@ludicon/spark.js/three-gltf";
 import { initModelSelector, showError, updateDownloadLink, setLoading, setProgress } from "./ui.js";
 import { getWebGPUAdapter } from "./webgpu.js";
+import { makeTextureDebugger } from "./three-gltf-debug.js";
 
 // Make sure Three.js is up to date
 const threeRevision = parseInt(THREE.REVISION, 10);
@@ -21,6 +22,7 @@ let canvas, viewerEl;
 let camera, scene, renderer, controls;
 let loaderDefault, loaderSpark, loaderSparkLow;
 let currentModel = null; // Track current GLTF model to dispose when switching
+let dbg = null;
 
 await init();
 
@@ -87,6 +89,24 @@ async function init() {
   window.addEventListener("resize", resize, { passive: true });
   resize();
 
+  document.addEventListener("keydown", event => {
+    if (dbg) {
+      if (event.key === "1") {
+        dbg.restore();
+      } else if (event.key === "2") {
+        dbg.showBaseColor();
+      } else if (event.key === "3") {
+        dbg.showNormalMap();
+      } else if (event.key === "4") {
+        dbg.showRoughness();
+      } else if (event.key === "5") {
+        dbg.showOcclusion();
+      } else if (event.key === "6") {
+        dbg.showEmissive();
+      }
+    }
+  });
+
   renderer.setAnimationLoop(animate);
 }
 
@@ -129,6 +149,7 @@ async function loadModel(url, useSpark) {
     gltf.scene.position.sub(center);
 
     scene.add(gltf.scene);
+    dbg = makeTextureDebugger(gltf.scene);
   } finally {
     console.timeEnd(`Load ${url}`);
     setProgress(100, "Loaded");
@@ -141,6 +162,8 @@ async function loadModel(url, useSpark) {
 
 function disposeModel(gltf) {
   if (!gltf) return;
+  dbg.remove();
+  dbg = null;
   gltf.scene.traverse(node => {
     if (node.geometry) {
       node.geometry.dispose();
