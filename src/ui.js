@@ -42,7 +42,6 @@ const overlay = {
 };
 
 export function setLoading(on) {
-  //overlay.el.classList.toggle('show', on);
   overlay.el.classList.toggle("hide", !on);
   overlay.el.setAttribute("aria-busy", on ? "true" : "false");
   // Disable UI
@@ -76,7 +75,6 @@ export async function initModelSelector(onLoadModel) {
     models = updateModelBar(e.target.value);
 
     await loadModel(models[0].url, models[0].useSpark);
-
     updateChart(models[0]);
   });
 
