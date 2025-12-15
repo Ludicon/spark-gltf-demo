@@ -8,6 +8,8 @@ import { NodeIO } from "@gltf-transform/core";
 import { listTextureSlots } from "@gltf-transform/functions";
 import {
   EXTTextureAVIF,
+  EXTTextureWebP,
+  KHRTextureBasisu,
   KHRMaterialsClearcoat,
   KHRMaterialsIOR,
   KHRMaterialsTransmission,
@@ -17,6 +19,7 @@ import {
   KHRMaterialsSheen,
   EXTMeshoptCompression,
   KHRMeshQuantization,
+  KHRLightsPunctual,
 } from "@gltf-transform/extensions";
 
 import { MeshoptDecoder } from 'meshoptimizer';
@@ -40,6 +43,8 @@ async function main() {
 
   const io = new NodeIO().registerExtensions([
     EXTTextureAVIF,
+    EXTTextureWebP,
+    KHRTextureBasisu,
     KHRMaterialsClearcoat,
     KHRMaterialsIOR,
     KHRMaterialsTransmission,
@@ -49,6 +54,7 @@ async function main() {
     KHRMaterialsSheen,
     EXTMeshoptCompression,
     KHRMeshQuantization,
+    KHRLightsPunctual,
   ]);
   io.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
   const doc = await io.read(inputPath);

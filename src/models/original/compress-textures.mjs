@@ -8,6 +8,7 @@ import { NodeIO } from "@gltf-transform/core";
 import { listTextureSlots } from "@gltf-transform/functions";
 import {
   EXTTextureAVIF,
+  EXTTextureWebP,
   KHRMaterialsClearcoat,
   KHRMaterialsIOR,
   KHRMaterialsTransmission,
@@ -15,10 +16,16 @@ import {
   KHRMaterialsVolume,
   KHRTextureTransform,
   KHRMaterialsSheen,
+  EXTMeshoptCompression,
+  KHRMeshQuantization,
+  KHRLightsPunctual,
 } from "@gltf-transform/extensions";
+
+import { MeshoptDecoder } from "meshoptimizer";
 
 const quality = Number(process.argv[4] ?? 80);
 const speed = 2; // 0-10 slowst-fast
+const avif = true;
 
 function run(cmd, args, { cwd } = {}) {
   return new Promise((resolve, reject) => {
@@ -36,26 +43,52 @@ function run(cmd, args, { cwd } = {}) {
 }
 
 function avifArgsForTexture(slots) {
-  // Encode normals using identity color transform.
-  if (slots == ["normalTexture"]) {
-    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
-  }
+  if (avif) {
+    // Encode normals using identity color transform.
+    if (slots == ["normalTexture"]) {
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
+    }
 
-  // If the texture is only used for occlusion, then store as greyscale.
-  if (slots == ["occlusionTexture"]) {
-    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--yuv", "400"];
-  }
+    // If the texture is only used for occlusion, then store as greyscale.
+    if (slots == ["occlusionTexture"]) {
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--yuv", "400"];
+    }
 
-  // Encode ORM textures using identity color transform.
-  if (slots.includes("metallicRoughnessTexture")) {
-    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
-  }
+    // Encode ORM textures using identity color transform.
+    if (slots.includes("metallicRoughnessTexture")) {
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
+    }
 
-  // Everything else (baseColor, emissive, etc) uses yuv 4:4:4 and tune iq.
-  return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=iq"];
+    // Everything else (baseColor, emissive, etc) uses yuv 4:4:4 and tune iq.
+    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=iq"];
+  } else {
+    // @@
+  }
 }
 
-async function processTexture(inPath, outPath, slots) {
+async function processTextureWebP(inPath, outPath, slots) {
+  if (slots.includes("normalTexture")) {
+    // Normalize normals and store as XXXY.
+    // prettier-ignore
+    await run("magick", [
+      `${inPath}`,
+      "-channel", "R", "-fx", 'nx=(r-0.5)*2; ny=(g-0.5)*2; nz=(b-0.5)*2; len=sqrt(max(0, nx*nx+ny*ny+nz*nz)); len=max(len,1e-6); nx/len/2+0.5',
+      "-channel", "G", "-fx", 'nx=(r-0.5)*2; ny=(g-0.5)*2; nz=(b-0.5)*2; len=sqrt(max(0, nx*nx+ny*ny+nz*nz)); len=max(len,1e-6); nx/len/2+0.5',
+      "-channel", "B", "-fx", 'nx=(r-0.5)*2; ny=(g-0.5)*2; nz=(b-0.5)*2; len=sqrt(max(0, nx*nx+ny*ny+nz*nz)); len=max(len,1e-6); nx/len/2+0.5',
+      "-channel", "A", "-fx", 'nx=(r-0.5)*2; ny=(g-0.5)*2; nz=(b-0.5)*2; len=sqrt(max(0, nx*nx+ny*ny+nz*nz)); len=max(len,1e-6); ny/len/2+0.5',
+      "tmp.png",
+    ]);
+
+    await run("cwebp", ["-near_lossless", "50", "tmp.png", "-o", outPath]);
+
+    await run("rm", ["tmp.png"]);
+    return true;
+  }
+
+  return false;
+}
+
+async function processTextureAVIF(inPath, outPath, slots) {
   let args = avifArgsForTexture(slots);
 
   if (slots.includes("normalTexture")) {
@@ -89,6 +122,10 @@ async function processTexture(inPath, outPath, slots) {
   }
 }
 
+async function decodeWebpTexture(inPath, outPath) {
+  await run("dwebp", [inPath, "-o", outPath]);
+}
+
 // Get file extension for mime type.
 function getFileExt(mimeType) {
   if (mimeType === "image/png") return ".png";
@@ -107,6 +144,7 @@ async function main() {
 
   const io = new NodeIO().registerExtensions([
     EXTTextureAVIF,
+    EXTTextureWebP,
     KHRMaterialsClearcoat,
     KHRMaterialsIOR,
     KHRMaterialsTransmission,
@@ -114,11 +152,17 @@ async function main() {
     KHRMaterialsVolume,
     KHRTextureTransform,
     KHRMaterialsSheen,
+    EXTMeshoptCompression,
+    KHRMeshQuantization,
+    KHRLightsPunctual,
   ]);
+  io.registerDependencies({ "meshopt.decoder": MeshoptDecoder });
+
   const doc = await io.read(inputPath);
 
   // Only create extensions we need to emit.
-  const avifExt = doc.createExtension(EXTTextureAVIF).setRequired(true);
+  const avifExt = doc.createExtension(EXTTextureAVIF).setRequired(avif);
+  const webpExt = doc.createExtension(EXTTextureWebP).setRequired(!avif);
 
   const root = doc.getRoot();
   const textures = root.listTextures();
@@ -134,20 +178,35 @@ async function main() {
 
       const name = tex.getName() || `tex_${i}`;
       const extension = getFileExt(tex.getMimeType());
-      const inPath = path.join(outDir, `${name}${extension}`);
-      const outPath = path.join(outDir, `${name}.avif`);
+      let inPath = path.join(outDir, `${name}${extension}`);
+      const outPath = path.join(outDir, `${name}.${avif ? "avif" : "webp"}`);
 
       const slots = listTextureSlots(tex);
 
       await fs.writeFile(inPath, image);
 
       console.log(`Encoding ${inPath} -> ${outPath} with slots: `, slots);
-      await processTexture(inPath, outPath, slots);
 
-      const avifBytes = await fs.readFile(outPath);
+      // Decode WebP textures.
+      if (extension === ".webp") {
+        await decodeWebpTexture(inPath, "tmp.png");
+        inPath = "tmp.png";
+      }
 
-      tex.setMimeType("image/avif");
-      tex.setImage(avifBytes);
+      let success = true;
+      if (avif) {
+        await processTextureAVIF(inPath, outPath, slots);
+        tex.setMimeType("image/avif");
+      } else {
+        // The avif encoder only processes some textures for now.
+        success = await processTextureWebP(inPath, outPath, slots);
+        tex.setMimeType("image/webp");
+      }
+
+      if (success) {
+        const avifBytes = await fs.readFile(outPath);
+        tex.setImage(avifBytes);
+      }
     }
 
     await io.write(outputPath, doc);

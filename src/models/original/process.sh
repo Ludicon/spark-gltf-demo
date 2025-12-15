@@ -8,7 +8,7 @@ fi
 
 mkdir -p "$1"
 
-./avif-textures.mjs "$1.glb" "$1/$1-avif.glb" 80
+./compress-textures.mjs "$1.glb" "$1/$1-avif.glb" 80
 
 # Display size of all avif files:
 echo "Size of all avif files:"
