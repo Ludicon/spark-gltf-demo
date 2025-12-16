@@ -20,22 +20,25 @@ import {
   EXTMeshoptCompression,
   KHRMeshQuantization,
   KHRLightsPunctual,
+  KHRDracoMeshCompression,
+  KHRMaterialsUnlit,
 } from "@gltf-transform/extensions";
 
-import { MeshoptDecoder } from 'meshoptimizer';
+import { MeshoptDecoder } from "meshoptimizer";
+import draco3d from "draco3dgltf";
 
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B";
 
   const k = 1024;
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const units = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${units[i]}`;
 }
 
 async function main() {
-  const inputPath = process.argv[2]
+  const inputPath = process.argv[2];
   if (!inputPath) {
     console.error("Usage: texture-sizes.mjs <input.glb>");
     process.exit(1);
@@ -55,8 +58,12 @@ async function main() {
     EXTMeshoptCompression,
     KHRMeshQuantization,
     KHRLightsPunctual,
+    KHRDracoMeshCompression,
+    KHRMaterialsUnlit,
   ]);
-  io.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
+  io.registerDependencies({ "meshopt.decoder": MeshoptDecoder });
+  io.registerDependencies({ "draco3d.decoder": await draco3d.createDecoderModule() });
+
   const doc = await io.read(inputPath);
 
   const root = doc.getRoot();

@@ -19,9 +19,11 @@ import {
   EXTMeshoptCompression,
   KHRMeshQuantization,
   KHRLightsPunctual,
+  KHRDracoMeshCompression,
 } from "@gltf-transform/extensions";
 
 import { MeshoptDecoder } from "meshoptimizer";
+import draco3d from "draco3dgltf";
 
 const quality = Number(process.argv[4] ?? 80);
 const speed = 2; // 0-10 slowst-fast
@@ -155,8 +157,10 @@ async function main() {
     EXTMeshoptCompression,
     KHRMeshQuantization,
     KHRLightsPunctual,
+    KHRDracoMeshCompression,
   ]);
   io.registerDependencies({ "meshopt.decoder": MeshoptDecoder });
+  io.registerDependencies({ "draco3d.decoder": await draco3d.createDecoderModule() });
 
   const doc = await io.read(inputPath);
 

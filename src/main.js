@@ -4,6 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { UltraHDRLoader } from "three/addons/loaders/UltraHDRLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 import { Spark } from "@ludicon/spark.js";
 import { registerSparkLoader } from "@ludicon/spark.js/three-gltf";
@@ -66,9 +67,13 @@ async function init() {
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
 
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath("./libs/draco/");
+
   // Create multiple GLTF loaders with KTX and Spark plugins.
   loaderDefault = new GLTFLoader();
   loaderDefault.setMeshoptDecoder(MeshoptDecoder);
+  loaderDefault.setDRACOLoader(dracoLoader);
 
   const ktx2 = new KTX2Loader();
   ktx2.setTranscoderPath("./libs/basis/");
@@ -77,10 +82,12 @@ async function init() {
 
   loaderSpark = new GLTFLoader();
   loaderSpark.setMeshoptDecoder(MeshoptDecoder);
+  loaderSpark.setDRACOLoader(dracoLoader);
   registerSparkLoader(loaderSpark, spark, { preferLowQuality: false });
 
   loaderSparkLow = new GLTFLoader();
   loaderSparkLow.setMeshoptDecoder(MeshoptDecoder);
+  loaderSparkLow.setDRACOLoader(dracoLoader);
   registerSparkLoader(loaderSparkLow, spark, { preferLowQuality: true });
 
   // Init model selector UI:
