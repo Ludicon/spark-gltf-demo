@@ -21,7 +21,7 @@ export function makeTextureDebugger(root) {
       if (Array.isArray(o.userData._origMat)) {
         // @@
       } else {
-        if (o.material != o.userData._origMat) {
+        if (o.material !== o.userData._origMat) {
           //o.material.dispose();
         }
         o.material = makeMat(o.material) || o.material;

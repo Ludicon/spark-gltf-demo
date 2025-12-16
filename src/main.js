@@ -123,7 +123,7 @@ async function loadModel(url, useSpark) {
   setProgress(0, "Loading…");
   console.time(`Load ${url}`);
   try {
-    const loader = useSpark ? (useSpark == "lo" ? loaderSparkLow : loaderSpark) : loaderDefault;
+    const loader = useSpark ? (useSpark === "lo" ? loaderSparkLow : loaderSpark) : loaderDefault;
 
     const gltf = await new Promise((resolve, reject) => {
       loader.load(

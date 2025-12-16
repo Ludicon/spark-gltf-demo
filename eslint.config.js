@@ -26,7 +26,7 @@ export default [
       "max-len": [
         "error",
         {
-          code: 120,
+          code: 140,
           ignorePattern: "^\\s*\\{.*\\},$",
           ignoreUrls: true,
           ignoreStrings: true,
@@ -50,6 +50,6 @@ export default [
   },
   {
     // Ignore node_modules and dist directories
-    ignores: ["node_modules/**", "dist/**", "public/**"],
+    ignores: ["node_modules/**", "dist/**", "public/**", "src/libs/**"],
   },
 ];

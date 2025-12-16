@@ -22,7 +22,7 @@
     "preview": "vite preview --host",
     "prettier:check": "npx prettier . --check",
     "prettier:write": "npx prettier . --write",
-    "lint": "eslint 'src/js/**/*.js' --ignore-pattern 'src/js/levels.js'",
+    "lint": "eslint 'src/**/*.js' --ignore-pattern 'src/js/levels.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
