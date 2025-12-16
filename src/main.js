@@ -60,6 +60,8 @@ async function init() {
     scene.backgroundIntensity = 0.25;
     scene.environment = texture;
   });
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  //scene.add(new THREE.DirectionalLight(0xffffff, 3.5));
 
   camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
   camera.position.set(2, 2, 3);
