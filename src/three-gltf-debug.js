@@ -93,11 +93,12 @@ export function makeTextureDebugger(root) {
       const t = texOrNull(m, "normalMap");
       if (!t) return null;
 
+      // Normal maps are linear data; make sure they're not treated as sRGB
+      if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
+
       const mat = new THREE.MeshNormalMaterial({ normalMap: t });
       // const mat = new THREE.MeshBasicMaterial({ map: t });
 
-      // Normal maps are linear data; make sure they're not treated as sRGB
-      if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
       return mat;
     });
   }
@@ -106,8 +107,8 @@ export function makeTextureDebugger(root) {
     applyForEachMesh(m => {
       const t = texOrNull(m, "roughnessMap");
       if (!t) return null;
-      const mat = new THREE.MeshBasicMaterial({ map: t });
       if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({ map: t });
       return mat;
     });
   }
@@ -116,8 +117,8 @@ export function makeTextureDebugger(root) {
     applyForEachMesh(m => {
       const t = texOrNull(m, "metalnessMap");
       if (!t) return null;
-      const mat = new THREE.MeshBasicMaterial({ map: t });
       if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({ map: t });
       return mat;
     });
   }
@@ -126,8 +127,8 @@ export function makeTextureDebugger(root) {
     applyForEachMesh(m => {
       const t = texOrNull(m, "aoMap");
       if (!t) return null;
-      const mat = new THREE.MeshBasicMaterial({ map: t });
       if (t && t.colorSpace !== THREE.LinearSRGBColorSpace) t.colorSpace = THREE.LinearSRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({ map: t });
       return mat;
     });
   }
@@ -136,9 +137,9 @@ export function makeTextureDebugger(root) {
     applyForEachMesh(m => {
       const t = texOrNull(m, "emissiveMap");
       if (!t) return null;
-      const mat = new THREE.MeshBasicMaterial({ map: t });
       // Emissive textures are authored in sRGB in most pipelines
       if (t && t.colorSpace !== THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
+      const mat = new THREE.MeshBasicMaterial({ map: t });
       return mat;
     });
   }
