@@ -66,11 +66,6 @@ cd src/models/original
 ./compress-textures.mjs input.glb output.glb [quality]
 ```
 
-**Parameters:**
-- `input.glb`: Source glTF model
-- `output.glb`: Output model with AVIF textures
-- `quality`: Optional quality setting (0-100, default: 80)
-
 **Example:**
 ```bash
 # High quality (larger files)
