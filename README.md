@@ -3,7 +3,7 @@
 
 An interactive WebGPU-based glTF viewer demonstrating real-time GPU texture compression using [spark.js](https://ludicon.com/sparkjs/) and [Three.js](https://threejs.org/).
 
-[<img src="https://media.githubusercontent.com/media/Ludicon/spark-gltf-demo/refs/heads/main/public/og2x.jpg">](https://ludicon.com/sparkjs/gltf-demo/)
+[<img src="public/og2x.jpg">](https://ludicon.com/sparkjs/gltf-demo/)
 
 
 ## What is spark.js?
