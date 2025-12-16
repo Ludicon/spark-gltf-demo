@@ -26,7 +26,7 @@ import { MeshoptDecoder } from "meshoptimizer";
 import draco3d from "draco3dgltf";
 
 const quality = Number(process.argv[4] ?? 80);
-const speed = 2; // 0-10 slowst-fast
+const speed = 2; // 0-10: slowest - fastest
 const avif = true;
 
 function run(cmd, args, { cwd } = {}) {
@@ -47,12 +47,12 @@ function run(cmd, args, { cwd } = {}) {
 function avifArgsForTexture(slots) {
   if (avif) {
     // Encode normals using identity color transform.
-    if (slots == ["normalTexture"]) {
+    if (slots.length === 1 && slots[0] === "normalTexture") {
       return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
     }
 
     // If the texture is only used for occlusion, then store as greyscale.
-    if (slots == ["occlusionTexture"]) {
+    if (slots.length === 1 && slots[0] === "occlusionTexture") {
       return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--yuv", "400"];
     }
 
@@ -93,7 +93,7 @@ async function processTextureWebP(inPath, outPath, slots) {
 async function processTextureAVIF(inPath, outPath, slots) {
   let args = avifArgsForTexture(slots);
 
-  if (slots.includes("normalTexture")) {
+  if (slots.length === 1 && slots[0] === "normalTexture") {
     // Normalize normals and clear Z component.
     // prettier-ignore
     await run("magick", [
@@ -111,7 +111,7 @@ async function processTextureAVIF(inPath, outPath, slots) {
 
     // Clean up temporary file.
     await run("rm", ["tmp.png"]);
-  } else if (slots == ["occlusionTexture"]) {
+  } else if (slots.length === 1 && slots[0] === "occlusionTexture") {
     // Replicate R channel across RGB:
     await run("magick", [`${inPath}`, "-channel", "R", "-separate", "-set", "colorspace", "RGB", "-combine", "tmp.png"]);
 
