@@ -27,3 +27,5 @@ gzip -9 -c $1-uastc.glb | wc -c | numfmt --to=iec
 
 cp "$1-etc1s.glb" "../$1-etc1s.glb"
 cp "$1-uastc.glb" "../$1-uastc.glb"
+
+gltf-transform meshopt $1.glb ../$1.glb
