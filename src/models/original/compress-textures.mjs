@@ -112,7 +112,9 @@ async function processTextureAVIF(inPath, outPath, slots) {
 
     // Clean up temporary file.
     await run("rm", ["tmp.png"]);
-  } else if (slots.length === 1 && slots[0] === "occlusionTexture") {
+  } else if (false && slots.length === 1 && slots[0] === "occlusionTexture") {
+    // @@ Note, this is shifting the occlusion values, probably assuming srgb at some step of the pipeline, so this is disabled for now.
+
     // Replicate R channel across RGB:
     await run("magick", [`${inPath}`, "-channel", "R", "-separate", "-set", "colorspace", "RGB", "-combine", "tmp.png"]);
 
