@@ -1,23 +1,19 @@
-
 # spark.js⚡ glTF Demo
 
 An interactive WebGPU-based glTF viewer demonstrating real-time GPU texture compression using [spark.js](https://ludicon.com/sparkjs/) and [Three.js](https://threejs.org/).
 
 [<img src="public/og2x.jpg">](https://ludicon.com/sparkjs/gltf-demo/)
 
-
 ## What is spark.js?
 
 [spark.js](https://github.com/ludicon/spark.js) is a real-time texture compression library that enables the use of modern image formats (AVIF, WebP, JPEG XL) compressing them on the fly to optimize GPU memory and bandwidth usage with minimal GPU overhead.
-
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18+ 
+- **Node.js** 18+
 - **Modern Browser** with WebGPU support
-
 
 ### Installation
 
@@ -45,7 +41,6 @@ npm run preview
 
 The demo will be available at `http://localhost:5173`
 
-
 ### Keyboard Shortcuts
 
 - **1**: Normal rendering (lit mode)
@@ -67,6 +62,7 @@ cd src/models/original
 ```
 
 **Example:**
+
 ```bash
 # High quality (larger files)
 ./compress-textures.mjs FlightHelmet.glb FlightHelmet-avif.glb 80
