@@ -1,8 +1,9 @@
+
 # spark.js⚡ glTF Demo
 
 An interactive WebGPU-based glTF viewer demonstrating real-time GPU texture compression using [spark.js](https://ludicon.com/sparkjs/) and [Three.js](https://threejs.org/).
 
-[<img src="https://ludicon.com/sparkjs/gltf-demo/og.jpg" width="49%">](https://ludicon.com/sparkjs/gltf-demo/)
+[<img src="https://ludicon.com/sparkjs/gltf-demo/og2x.jpg" width="49%">](https://ludicon.com/sparkjs/gltf-demo/)
 
 
 ## What is spark.js?
@@ -45,7 +46,7 @@ npm run preview
 The demo will be available at `http://localhost:5173`
 
 
-## Keyboard Shortcuts
+### Keyboard Shortcuts
 
 - **1**: Normal rendering (lit mode)
 - **2**: Show base color only
@@ -79,7 +80,7 @@ cd src/models/original
 ./compress-textures.mjs FlightHelmet.glb FlightHelmet-avif-lo.glb 50
 ```
 
-## Adding New Models
+### Adding New Models
 
 1. Place your source glTF/GLB file in `src/models/original/`
 2. Run `./process.sh`, `./process-lo.sh` and `./process-avif.sh` to generate processed models.
@@ -93,6 +94,8 @@ export const Models = {
   ],
 };
 ```
+
+4. Use `texture-sizes.mjs` script to calculate texture sizes.
 
 ## License
 
