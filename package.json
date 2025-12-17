@@ -38,7 +38,7 @@
     "@gltf-transform/core": "^4.2.1",
     "@gltf-transform/extensions": "^4.2.1",
     "@gltf-transform/functions": "^4.2.1",
-    "@ludicon/spark.js": "^0.0.12",
+    "@ludicon/spark.js": "^0.0.13",
     "three": "^0.182.0"
   }
 }
