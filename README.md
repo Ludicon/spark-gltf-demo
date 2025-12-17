@@ -52,12 +52,19 @@ The demo will be available at `http://localhost:5173`
 
 ## Model Processing
 
-The `src/models/original/` directory contains tools for processing glTF models with AVIF textures:
+The `src/models/original/` directory contains tools for generating glTF models with AVIF textures:
 
-### Convert Textures to AVIF
+### Convert PBR Textures to AVIF
+
+I've provided a script to convert the model textures to AVIF format using settings tailored to each specific PBR texture type. The script requires:
+
+- avifenc
+- magick (ImageMagick)
+- gltf-transform
+
+Run it as follows:
 
 ```bash
-cd src/models/original
 ./compress-textures.mjs input.glb output.glb [quality]
 ```
 
@@ -65,10 +72,10 @@ cd src/models/original
 
 ```bash
 # High quality (larger files)
-./compress-textures.mjs FlightHelmet.glb FlightHelmet-avif.glb 80
+./compress-textures.mjs FlightHelmet.glb ../FlightHelmet-avif.glb 80
 
 # Lower quality (smaller files)
-./compress-textures.mjs FlightHelmet.glb FlightHelmet-avif-lo.glb 50
+./compress-textures.mjs FlightHelmet.glb ../FlightHelmet-avif-lo.glb 50
 ```
 
 ### Adding New Models
@@ -86,11 +93,10 @@ export const Models = {
 };
 ```
 
-4. Use `texture-sizes.mjs` script to calculate texture sizes.
+4. Use `texture-sizes.mjs` script to calculate texture sizes and enter them in the Models table.
 
-## License
+Note, this is not a robust or performant production pipeline. Contact us at <spark@ludicon.com> if you need a more robust solution!
 
-MIT License - see [LICENSE](LICENSE) for details
 
 ## Links
 
