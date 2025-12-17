@@ -20,7 +20,9 @@ export default defineConfig({
         copy({
           targets: [
             { src: "src/models/*.glb", dest: "dist/models" },
+            { src: "src/assets/*", dest: "dist/assets" },
             { src: "src/libs/basis/*", dest: "dist/libs/basis" },
+            { src: "src/libs/draco/*", dest: "dist/libs/draco" },
             { src: "public/*", dest: "dist" },
           ],
           hook: "writeBundle",
