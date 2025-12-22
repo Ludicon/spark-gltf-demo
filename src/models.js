@@ -15,7 +15,7 @@ export const Models = {
     { label: "Basis UASTC", url: "./models/StainedGlassLamp-uastc.glb", size: 33.78, vram: 77.6 },
     { label: "Spark⚡ AVIF", url: "./models/StainedGlassLamp-avif.glb", size: 4.9, vram: 77.6, spark: "hi" },
     { label: "Basis ETC1S", url: "./models/StainedGlassLamp-etc1s.glb", size: 12.18, vram: 52.3 },
-    { label: "Spark⚡ AVIF (low)", url: "./models/StainedGlassLamp-avif-lo.glb", size: 2.5, vram: 48.3, spark: "lo" },
+    { label: "Spark⚡ AVIF (low)", url: "./models/StainedGlassLamp-avif-lo.glb", size: 2.4, vram: 48.3, spark: "lo" },
   ],
   ToyCar: [
     { label: "Original PNG", url: "./models/ToyCar.glb", size: 2.05, vram: 34.67, active: true },
