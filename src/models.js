@@ -19,9 +19,9 @@ export const Models = {
   ],
   ToyCar: [
     { label: "Original PNG", url: "./models/ToyCar.glb", size: 2.05, vram: 34.67, active: true },
-    { label: "Basis UASTC", url: "./models/ToyCar-uastc.glb", size: 0.34, vram: 8.67 },
+    { label: "Basis UASTC", url: "./models/ToyCar-uastc.glb", size: 0.73, vram: 8.67 },
     { label: "Spark⚡ AVIF", url: "./models/ToyCar-avif.glb", size: 0.26, vram: 8.0, spark: "hi" },
-    { label: "Basis ETC1S", url: "./models/ToyCar-etc1s.glb", size: 0.73, vram: 5.2 },
+    { label: "Basis ETC1S", url: "./models/ToyCar-etc1s.glb", size: 0.34, vram: 5.2 },
     { label: "Spark⚡ AVIF (low)", url: "./models/ToyCar-avif-lo.glb", size: 0.19, vram: 5.2, spark: "lo" },
   ],
   FlightHelmet: [
