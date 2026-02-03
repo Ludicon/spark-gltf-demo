@@ -49,21 +49,21 @@ function avifArgsForTexture(slots) {
   if (avif) {
     // Encode normals using identity color transform.
     if (slots.length === 1 && slots[0] === "normalTexture") {
-      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "-d", "10", "--cicp", "1/8/0"];
     }
 
     // If the texture is only used for occlusion, then store as greyscale.
     if (slots.length === 1 && slots[0] === "occlusionTexture") {
-      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--yuv", "400"];
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "-d", "10", "--yuv", "400"];
     }
 
     // Encode ORM textures using identity color transform.
     if (slots.includes("metallicRoughnessTexture")) {
-      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "--cicp", "1/8/0"];
+      return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=ssim", "-d", "10", "--cicp", "1/8/0"];
     }
 
     // Everything else (baseColor, emissive, etc) uses yuv 4:4:4 and tune iq.
-    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=iq"];
+    return ["-q", `${quality}`, "-s", `${speed}`, "-c", "aom", "-a", "tune=iq", "-d", "10"];
   } else {
     // @@
   }
