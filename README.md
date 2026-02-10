@@ -52,51 +52,9 @@ The demo will be available at `http://localhost:5173`
 
 ## Model Processing
 
-The `src/models/original/` directory contains tools for generating glTF models with AVIF textures:
+To generate glTF models with AVIF textures I recommend using: 
 
-### Convert PBR Textures to AVIF
-
-I've provided a script to convert the model textures to AVIF format using settings tailored to each specific PBR texture type. The script requires:
-
-- avifenc
-- magick (ImageMagick)
-- gltf-transform
-
-Run it as follows:
-
-```bash
-./compress-textures.mjs input.glb output.glb [quality]
-```
-
-**Example:**
-
-```bash
-# High quality (larger files)
-./compress-textures.mjs FlightHelmet.glb ../FlightHelmet-avif.glb 80
-
-# Lower quality (smaller files)
-./compress-textures.mjs FlightHelmet.glb ../FlightHelmet-avif-lo.glb 50
-```
-
-### Adding New Models
-
-1. Place your source glTF/GLB file in `src/models/original/`
-2. Run `./process.sh`, `./process-lo.sh` and `./process-avif.sh` to generate processed models.
-3. Add model entries to `src/models.js`:
-
-```javascript
-export const Models = {
-  YourModel: [
-    { label: "Original PNG", url: "./models/YourModel.glb", size: 10.5, vram: 42.0 },
-    { label: "Spark⚡ AVIF", url: "./models/YourModel-avif.glb", size: 2.1, vram: 10.5, spark: "hi" },
-  ],
-};
-```
-
-4. Use `texture-sizes.mjs` script to calculate texture sizes and enter them in the Models table.
-
-Note, this is not a robust or performant production pipeline. Contact us at <spark@ludicon.com> if you need a more robust solution!
-
+https://github.com/ludicon/gltf-tex/
 
 ## Links
 
@@ -107,7 +65,7 @@ Note, this is not a robust or performant production pipeline. Contact us at <spa
 
 ## Acknowledgments
 
-- [Three.js](https://threejs.org/) for the excellent WebGPU renderer
-- [gltf-transform.dev](https://gltf-transform.dev) for the excellent glTF model processing tools
+- [Three.js](https://threejs.org/) for the WebGPU renderer
+- [gltf-transform.dev](https://gltf-transform.dev) for the glTF model processing tools
 - Sample models from [glTF Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models)
 - Basis Universal transcoder from [Binomial LLC](https://github.com/BinomialLLC/basis_universal)
