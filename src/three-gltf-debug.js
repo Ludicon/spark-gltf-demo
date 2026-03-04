@@ -1,5 +1,4 @@
-//import * as THREE from 'three';
-import * as THREE from "../../three.js/build/three.webgpu.js";
+import * as THREE from "three";
 
 // Call once per model after you add it to the scene:
 export function makeTextureDebugger(root) {

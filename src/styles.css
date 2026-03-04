@@ -242,6 +242,35 @@ canvas {
   border-color: #666;
 }
 
+/* Renderer badge */
+#renderer-badge {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.badge-webgpu {
+  background: linear-gradient(135deg, #2a9d8f 0%, #1d7a6f 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-webgl {
+  background: linear-gradient(135deg, #e76f51 0%, #d4563f 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 /* Mobile styles */
 @media (max-width: 700px) {
   #barchart,
@@ -259,6 +288,11 @@ canvas {
 
   #modelSelectWrap {
     top: 3.5rem;
+  }
+
+  #renderer-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
   }
 
   #barchart {

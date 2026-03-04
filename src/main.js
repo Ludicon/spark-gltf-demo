@@ -1,4 +1,4 @@
-import * as THREE from "three/webgpu";
+import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
@@ -6,10 +6,9 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { UltraHDRLoader } from "three/addons/loaders/UltraHDRLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
-import { Spark } from "@ludicon/spark.js";
 import { registerSparkLoader } from "@ludicon/spark.js/three-gltf";
-import { initModelSelector, showError, updateDownloadLink, setLoading, setProgress } from "./ui.js";
-import { getWebGPUAdapter } from "./webgpu.js";
+import { initModelSelector, showError, updateDownloadLink, setLoading, setProgress, initUI } from "./ui.js";
+import { initializeRenderer } from "./renderer-init.js";
 import { makeTextureDebugger } from "./three-gltf-debug.js";
 
 // Make sure Three.js is up to date
@@ -28,27 +27,19 @@ let dbg = null;
 await init();
 
 async function init() {
-  // Initialize WebGPU device
-  const adapter = await getWebGPUAdapter();
-  const requiredFeatures = Spark.getRequiredFeatures(adapter);
-  const device = await adapter.requestDevice({ requiredFeatures });
-
-  // Create spark object and preload codecs for all formats.
-  const spark = await Spark.create(device, {
-    preload: ["rgba", "rgb", "rg", "r"],
-    preloadLowQuality: true,
-  });
-
   // Create canvas inside the viewer DIV
   canvas = document.createElement("canvas");
   viewerEl = document.getElementById("viewer");
   viewerEl.appendChild(canvas);
-  const context = canvas.getContext("webgpu");
 
-  // Renderer using our device & context
-  renderer = new THREE.WebGPURenderer({ device, context, antialias: true });
-  await renderer.init();
+  // Initialize renderer (WebGPU with WebGL fallback)
+  const { renderer: rendererInstance, spark, backend } = await initializeRenderer(canvas);
+
+  renderer = rendererInstance;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  // Initialize UI with backend info
+  initUI(backend);
 
   // Scene setup
   scene = new THREE.Scene();

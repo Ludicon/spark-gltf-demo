@@ -37,7 +37,7 @@ export const Models = {
     { label: "Spark⚡ AVIF", url: "./models/DiffuseTransmissionTeacup-avif.glb", size: 0.13, vram: 7, spark: "lo" },
   ],
   ForestHouse: [
-    { label: "Original AVIF", url: "./models/forest_house.glb", size: 1.7, vram: 48, active: true },
+    { label: "AVIF", url: "./models/forest_house.glb", size: 1.7, vram: 48, active: true },
     { label: "Spark⚡ AVIF", url: "./models/forest_house.glb", size: 1.7, vram: 16, spark: "hi" },
   ],
 };

@@ -14,16 +14,75 @@ let maxModelVram = 0;
 let models;
 let loadModel;
 
-const errorHTML = (title, body) => `
-<h1>${title}</h1>
-<p>${body}</p>
-<p>Check browser implementation status at <a href="https://caniuse.com/webgpu" target="_blank" rel="noreferrer">caniuse.com/webgpu</a>.</p>
-`;
+/**
+ * Get user-friendly recommendations for WebGPU/WebGL support
+ * @returns {string}
+ */
+export function getRendererRecommendation() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+  if (/iphone|ipad|ipod/i.test(ua)) {
+    return "On iOS, WebGPU is supported in Safari 18+. WebGL 2 is supported in Safari 15+.";
+  }
+  if (/android/i.test(ua)) {
+    return "On Android, WebGPU is supported in Chrome 113+. WebGL 2 is widely supported.";
+  }
+  if (/windows/i.test(ua)) {
+    return "On Windows, WebGPU is supported in Chrome 113+, Edge 113+, and Firefox 141+. WebGL 2 is widely supported.";
+  }
+  if (/macintosh|mac os x/i.test(ua)) {
+    return "On macOS, WebGPU is supported in Safari 18+, Chrome 113+, and Firefox Nightly. WebGL 2 is widely supported.";
+  }
+  return "Please use a modern browser with WebGPU or WebGL 2 support.";
+}
 
 export function showError(title, body) {
   errorEl.style.display = "";
-  errorEl.innerHTML = errorHTML(title, body);
+
+  // Check if we're in WebGL fallback mode
+  const urlParams = new URLSearchParams(window.location.search);
+  const forcedRenderer = urlParams.get("renderer");
+
+  let extraHelp = "";
+  if (forcedRenderer !== "webgl") {
+    extraHelp = `<p><a href="?renderer=webgl" style="color: #e76f51; font-weight: bold;">Try WebGL fallback mode</a></p>`;
+  }
+
+  const recommendation = getRendererRecommendation();
+
+  errorEl.innerHTML = `
+    <h1>${title}</h1>
+    <p>${body}</p>
+    ${extraHelp}
+    <p>${recommendation}</p>
+    <p>Check browser implementation status at
+       <a href="https://caniuse.com/webgpu" target="_blank" rel="noreferrer">WebGPU</a> /
+       <a href="https://caniuse.com/webgl2" target="_blank" rel="noreferrer">WebGL 2</a>
+    </p>
+  `;
+
   viewerEl.style.display = "none";
+}
+
+export function initUI(backend) {
+  // Only show badge if renderer was explicitly selected via URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const forcedRenderer = urlParams.get("renderer");
+
+  if (forcedRenderer) {
+    // Add a badge showing which renderer is active
+    const badge = document.createElement("div");
+    badge.id = "renderer-badge";
+    badge.textContent = backend === "webgpu" ? "WebGPU" : "WebGL";
+    badge.className = backend === "webgpu" ? "badge-webgpu" : "badge-webgl";
+    badge.title = `Using ${backend === "webgpu" ? "WebGPU" : "WebGL"} renderer`;
+    document.body.appendChild(badge);
+  } else {
+    // If using WebGL fallback without explicit selection, just log it
+    if (backend === "webgl") {
+      console.log("Using WebGL fallback (WebGPU not available)");
+    }
+  }
 }
 
 export function updateDownloadLink(url) {

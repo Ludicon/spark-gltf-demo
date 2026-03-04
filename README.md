@@ -1,6 +1,6 @@
 # spark.js⚡ glTF Demo
 
-An interactive WebGPU-based glTF viewer demonstrating real-time GPU texture compression using [spark.js](https://ludicon.com/sparkjs/) and [Three.js](https://threejs.org/).
+An interactive glTF viewer demonstrating real-time GPU texture compression using [spark.js](https://ludicon.com/sparkjs/) and [Three.js](https://threejs.org/) with WebGPU and WebGL support.
 
 [<img src="public/og2x.jpg">](https://ludicon.com/sparkjs/gltf-demo/)
 
@@ -13,7 +13,7 @@ An interactive WebGPU-based glTF viewer demonstrating real-time GPU texture comp
 ### Prerequisites
 
 - **Node.js** 18+
-- **Modern Browser** with WebGPU support
+- **Modern Browser** with WebGPU or WebGL 2 support
 
 ### Installation
 
@@ -40,6 +40,17 @@ npm run preview
 ```
 
 The demo will be available at `http://localhost:5173`
+
+## Renderer Selection
+
+The demo automatically detects WebGPU availability and falls back to WebGL if needed.
+
+### URL Parameters
+
+You can manually select the renderer using URL parameters:
+
+- `https://ludicon.com/sparkjs/gltf-demo/?renderer=webgpu` - Force WebGPU renderer
+- `https://ludicon.com/sparkjs/gltf-demo/?renderer=webgl` - Force WebGL renderer
 
 ### Keyboard Shortcuts
 
