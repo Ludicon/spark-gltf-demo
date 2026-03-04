@@ -208,6 +208,23 @@ canvas {
   text-align: center;
 }
 
+#downloadLink {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  z-index: 6;
+  color: #ddd;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+#downloadLink:hover {
+  color: #fff;
+}
+
 #powered {
   position: absolute;
   bottom: 0.75rem;
