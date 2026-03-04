@@ -246,6 +246,7 @@ canvas {
 @media (max-width: 700px) {
   #barchart,
   #modelSelectWrap,
+  #downloadLink,
   #powered,
   #modelbar a {
     font-size: 0.75rem;
